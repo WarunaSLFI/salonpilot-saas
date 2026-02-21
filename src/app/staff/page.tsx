@@ -14,10 +14,7 @@ export default function StaffPage() {
                     {user?.name} ({user?.email})
                 </p>
 
-                <button
-                    onClick={logout}
-                    className="mt-4 rounded-md border px-4 py-2"
-                >
+                <button onClick={logout} className="mt-4 rounded-md border px-4 py-2">
                     Logout
                 </button>
 

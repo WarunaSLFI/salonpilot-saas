@@ -14,23 +14,23 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUserState] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const storedUser = getAuth();
-        if (storedUser) setUser(storedUser);
+        if (storedUser) setUserState(storedUser);
         setIsLoading(false);
     }, []);
 
     const login = (newUser: User) => {
         setAuth(newUser);
-        setUser(newUser);
+        setUserState(newUser);
     };
 
     const logout = () => {
         clearAuth();
-        setUser(null);
+        setUserState(null);
     };
 
     const value = useMemo(

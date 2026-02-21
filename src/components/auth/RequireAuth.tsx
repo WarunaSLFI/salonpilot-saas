@@ -28,7 +28,7 @@ export default function RequireAuth({
         }
     }, [user, isLoading, role, router]);
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div className="p-6">Loading...</div>;
     if (!user) return null;
     if (role && user.role !== role) return null;
 
