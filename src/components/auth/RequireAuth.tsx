@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth/useAuth';
-import { Role } from '@/lib/auth/types';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/useAuth";
+import type { Role } from "@/lib/auth/types";
 
 export default function RequireAuth({
     children,
@@ -16,37 +16,21 @@ export default function RequireAuth({
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLoading) {
-            if (!user) {
-                // Not logged in
-                router.push('/login');
-            } else if (role && user.role !== role) {
-                // Logged in but wrong role, redirect to correct dashboard
-                if (user.role === 'owner') {
-                    router.push('/dashboard');
-                } else if (user.role === 'staff') {
-                    router.push('/staff');
-                } else {
-                    router.push('/login');
-                }
-            }
+        if (isLoading) return;
+
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+
+        if (role && user.role !== role) {
+            router.push(user.role === "owner" ? "/dashboard" : "/staff");
         }
     }, [user, isLoading, role, router]);
 
-    // Show a blank/loading screen while checking auth
-    if (isLoading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
-            </div>
-        );
-    }
+    if (isLoading) return <div>Loading...</div>;
+    if (!user) return null;
+    if (role && user.role !== role) return null;
 
-    // If not logged in, or role mismatches, render nothing until redirect happens
-    if (!user || (role && user.role !== role)) {
-        return null;
-    }
-
-    // Authorized
     return <>{children}</>;
 }

@@ -1,29 +1,25 @@
-'use client';
+"use client";
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { User } from './types';
-import { getAuth, setAuth, clearAuth } from './storage';
+import React, { createContext, useEffect, useMemo, useState } from "react";
+import type { User } from "./types";
+import { clearAuth, getAuth, setAuth } from "./storage";
 
-interface AuthContextType {
+type AuthContextType = {
     user: User | null;
     isLoading: boolean;
     login: (user: User) => void;
     logout: () => void;
-}
+};
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Hydrate auth status from localStorage on mount
         const storedUser = getAuth();
-        if (storedUser) {
-            // eslint-disable-next-line
-            setUser(storedUser);
-        }
+        if (storedUser) setUser(storedUser);
         setIsLoading(false);
     }, []);
 
@@ -37,9 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
-    return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout }}>
-            {children}
-        </AuthContext.Provider>
+    const value = useMemo(
+        () => ({ user, isLoading, login, logout }),
+        [user, isLoading]
     );
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
